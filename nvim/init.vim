@@ -4,7 +4,7 @@
 
 call plug#begin('~/.local/share/nvim/plugged')
 
-Plug 'liuchengxu/vim-better-default'
+" Plug 'liuchengxu/vim-better-default'
 
 " Editing
 Plug 'ervandew/supertab'
@@ -183,9 +183,12 @@ filetype plugin indent on
 syntax on
 
 " Showing line numbers and length
-" set number
+set number
 " set relativenumber
 " set fo-=t
+
+" Highlights/underlines line cursor is on
+set cursorline
 
 " Set line number color
 highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE guifg=DarkGrey guibg=NONE
