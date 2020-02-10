@@ -4,6 +4,8 @@
 
 call plug#begin('~/.local/share/nvim/plugged')
 
+Plug 'liuchengxu/vim-better-default'
+
 " Editing
 Plug 'ervandew/supertab'
 Plug 'tpope/vim-commentary'
@@ -13,7 +15,7 @@ Plug 'wellle/targets.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'jpalardy/vim-slime'
 Plug 'junegunn/vim-slash'
-Plug 'dense-analysis/ale'
+Plug 'w0rp/ale'
 Plug 'tpope/vim-surround'
 
 " Visualization
@@ -30,6 +32,14 @@ Plug 'junegunn/fzf.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Plug 'jiangmiao/auto-pairs'
+
+" Clojure
+Plug 'guns/vim-sexp'
+Plug 'tpope/vim-sexp-mappings-for-regular-people'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'ncm2/float-preview.nvim'
+Plug 'Olical/conjure', { 'tag': 'v2.0.0', 'do': 'bin/compile' }
+Plug 'eraserhd/parinfer-rust'
 
 call plug#end()
 
@@ -76,8 +86,9 @@ endif
 let g:ale_linters = {
     \ 'python': ['pyflakes', 'mypy'],
     \ 'scala': ['scalastyle'],
-    \ 'haskell': ['stack-ghc-mod', 'hlint']
-    \ }
+    \ 'haskell': ['stack-ghc-mod', 'hlint'],
+    \ 'clojure': ['clj-kondo', 'joker']
+    \}
 let g:ale_python_mypy_options = "Ðignore-missing-imports"
 let g:ale_linters_explicit = 1
 let g:ale_completion_enabled = 1
@@ -107,6 +118,27 @@ nnoremap <Space>bh :FZF ~<CR>
 
 " SuperTab
 let g:SuperTabDefaultCompletionType = "<c-n>"
+
+" float-preview and Deoplete
+let g:deoplete#enable_at_startup = 1
+call deoplete#custom#option('keyword_patterns', {'clojure': '[\w!$%&*+/:<=>?@\^_~\-\.#]*'})
+set completeopt-=preview
+
+let g:float_preview#docked = 0
+let g:float_preview#max_width = 80
+let g:float_preview#max_height = 40
+
+" Conjure
+let g:conjure_log_auto_close = v:true
+let g:conjure_quick_doc_normal_mode = v:false
+let g:conjure_log_direction = "horizontal"
+let g:conjure_log_size_small = 25
+let g:conjure_log_blacklist = ["up", "ret", "ret-multiline", "load-file", "eval"]
+
+" Parinfer
+let g:parinfer_mode = 'smart'
+let g:parinfer_enabled = 1
+let g:parinfer_force_balance = 0
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -151,7 +183,7 @@ filetype plugin indent on
 syntax on
 
 " Showing line numbers and length
-set number
+" set number
 " set relativenumber
 " set fo-=t
 
@@ -204,3 +236,7 @@ nnoremap ) :tabnext<CR>
 
 " Set height of statusline
 set cmdheight=1
+
+" Set the leader to coma
+let mapleader = ","
+let maplocalleader="\<space>"
