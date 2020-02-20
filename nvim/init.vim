@@ -21,7 +21,8 @@ Plug 'tpope/vim-surround'
 " Visualization
 Plug 'airblade/vim-gitgutter'
 Plug 'itchyny/lightline.vim'
-Plug 'junegunn/rainbow_parentheses.vim'
+" Plug 'junegunn/rainbow_parentheses.vim'
+Plug 'luochen1990/rainbow', { 'for': 'clojure' }
 
 " Navigation
 Plug 'justinmk/vim-sneak'
@@ -140,6 +141,35 @@ let g:parinfer_mode = 'smart'
 let g:parinfer_enabled = 1
 let g:parinfer_force_balance = 0
 
+" Vim-sexp
+function! s:vim_sexp_mappings()
+    nmap <silent><buffer> [[        <Plug>(sexp_move_to_prev_top_element)
+    nmap <silent><buffer> ]]        <Plug>(sexp_move_to_next_top_element)
+    nmap <silent><buffer> <Space>ih <Plug>(sexp_insert_at_list_head)
+    nmap <silent><buffer> <Space>it <Plug>(sexp_insert_at_list_tail)
+    nmap <silent><buffer> <Space>w( <Plug>(sexp_round_head_wrap_element)
+    nmap <silent><buffer> <Space>w) <Plug>(sexp_round_tail_wrap_element)
+    nmap <silent><buffer> <Space>w{ <Plug>(sexp_curly_head_wrap_element)
+    nmap <silent><buffer> <Space>w} <Plug>(sexp_curly_tail_wrap_element)
+    nmap <silent><buffer> <Space>w[ <Plug>(sexp_square_head_wrap_element)
+    nmap <silent><buffer> <Space>w] <Plug>(sexp_square_tail_wrap_element)
+    nmap <silent><buffer> <Space>rl <Plug>(sexp_raise_list)
+    nmap <silent><buffer> <Space>re <Plug>(sexp_raise_element)
+
+    nmap <buffer> {{ <Plug>(sexp_move_to_prev_element_head)
+    nmap <buffer> }} <Plug>(sexp_move_to_next_element_head)
+    nmap <buffer> s< <Plug>(sexp_swap_element_backward)
+    nmap <buffer> s> <Plug>(sexp_swap_element_forward)
+
+    nmap <buffer> >< <Plug>(sexp_emit_tail_element)
+    nmap <buffer> <> <Plug>(sexp_capture_next_element)
+endfunction
+
+augroup VIM_SEXP_MAPPING
+    autocmd!
+    autocmd FileType clojure,scheme,lisp,timl call s:vim_sexp_mappings()
+augroup END
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                                 General Configs                                       "
@@ -184,7 +214,7 @@ syntax on
 
 " Showing line numbers and length
 set number
-" set relativenumber
+set relativenumber
 " set fo-=t
 
 " Highlights/underlines line cursor is on
@@ -243,3 +273,9 @@ set cmdheight=1
 " Set the leader to coma
 let mapleader = ","
 let maplocalleader="\<space>"
+
+" j and k operate on display lines
+nnoremap k gk
+nnoremap gk k
+nnoremap j gj
+nnoremap gj j
