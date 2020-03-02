@@ -21,7 +21,7 @@ Plug 'tpope/vim-surround'
 " Visualization
 Plug 'airblade/vim-gitgutter'
 Plug 'itchyny/lightline.vim'
-" Plug 'junegunn/rainbow_parentheses.vim'
+Plug 'junegunn/rainbow_parentheses.vim', { 'for': 'clojure' }
 Plug 'luochen1990/rainbow', { 'for': 'clojure' }
 
 " Navigation
@@ -142,6 +142,8 @@ let g:parinfer_enabled = 1
 let g:parinfer_force_balance = 0
 
 " Vim-sexp
+let g:sexp_filetypes = ''
+
 function! s:vim_sexp_mappings()
     nmap <silent><buffer> [[        <Plug>(sexp_move_to_prev_top_element)
     nmap <silent><buffer> ]]        <Plug>(sexp_move_to_next_top_element)
@@ -167,7 +169,16 @@ endfunction
 
 augroup VIM_SEXP_MAPPING
     autocmd!
-    autocmd FileType clojure,scheme,lisp,timl call s:vim_sexp_mappings()
+    autocmd FileType clojure call s:vim_sexp_mappings()
+augroup END
+
+" luochen1990 Rainbow pairs
+" let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
+
+" junegunn Rainbow pairs
+augroup rainbow_lisp
+  autocmd!
+  autocmd FileType lisp,clojure,scheme RainbowParentheses
 augroup END
 
 
