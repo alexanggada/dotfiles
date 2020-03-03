@@ -266,7 +266,7 @@ inoremap <silent><expr> <Tab>
 :imap <4-MiddleMouse> <Nop>
 
 " Change disable highlight command
-:command Dhl nohlsearch
+" :command Dhl nohlsearch
 
 " Disable stupid backup and swap files - they trigger too many events
 " for file system watchers
