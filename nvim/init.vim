@@ -17,6 +17,9 @@ Plug 'jpalardy/vim-slime'
 Plug 'junegunn/vim-slash'
 Plug 'w0rp/ale'
 Plug 'tpope/vim-surround'
+Plug 'prettier/vim-prettier', {
+  \ 'do': 'yarn install',
+  \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'] }
 
 " Visualization
 Plug 'airblade/vim-gitgutter'
@@ -39,8 +42,20 @@ Plug 'guns/vim-sexp'
 Plug 'tpope/vim-sexp-mappings-for-regular-people'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ncm2/float-preview.nvim'
-Plug 'Olical/conjure', { 'tag': 'v2.0.0', 'do': 'bin/compile' }
+Plug 'Olical/conjure', {'tag': 'v4.0.0'}
 Plug 'eraserhd/parinfer-rust'
+
+" X/HTML
+Plug 'alvan/vim-closetag'
+
+" Javascript
+Plug 'pangloss/vim-javascript'    " JavaScript support
+Plug 'maxmellon/vim-jsx-pretty'   " JS and JSX syntax
+
+" Typescript
+Plug 'leafgarland/typescript-vim' " TypeScript syntax
+Plug 'peitalin/vim-jsx-typescript'
+Plug 'jparise/vim-graphql'        " GraphQL syntax
 
 call plug#end()
 
@@ -49,7 +64,7 @@ call plug#end()
 "                                 Plugin Settings                                       "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Tmux Navigator
+""" Tmux Navigator "
 if exists('$TMUX')
     function! TmuxOrSplitSwitch(wincmd, tmuxdir)
     let previous_winnr = winnr()
@@ -79,16 +94,20 @@ else
     map <C-l> <C-w>l
 endif
 
-" Lightline
+""" Lightline
 " Remove --INSERT--
 " set noshowmode
 
-" Ale
+""" Ale
 let g:ale_linters = {
     \ 'python': ['pyflakes', 'mypy'],
     \ 'scala': ['scalastyle'],
     \ 'haskell': ['stack-ghc-mod', 'hlint'],
-    \ 'clojure': ['clj-kondo', 'joker']
+    \ 'clojure': ['clj-kondo', 'joker'],
+    \ 'html': ['htmlhint'],
+    \ 'css': ['stylelint'],
+    \ 'javascript': ['eslint'],
+    \ 'typescript': ['eslint']
     \}
 let g:ale_python_mypy_options = "Ðignore-missing-imports"
 let g:ale_linters_explicit = 1
@@ -100,7 +119,7 @@ hi ALEWarningSign ctermbg=234         ctermfg=11 guibg=234 guifg=11
 hi ALEWarning     ctermbg=DarkMagenta guibg=DarkMagenta
 let g:airline#extensions#ale#enabled = 1
 
-" Slime
+""" Slime
 let g:slime_target = "tmux"
 silent! let g:slime_default_config = {
     \ "socket_name": split($TMUX, ",")[0],
@@ -109,18 +128,19 @@ silent! let g:slime_default_config = {
 let g:slime_dont_ask_default = 1
 let g:slime_python_ipython = 1
 
-" FZF
+""" FZF
 let g:fzf_action = {
             \'enter': 'tabedit',
             \'ctrl-v': 'vsplit',
             \'ctrl-t': 'tabedit'}
 nnoremap <Space>be :FZF<CR>
 nnoremap <Space>bh :FZF ~<CR>
+" nnoremap <expr> <C-p> (len(system('git rev-parse')) ? ':Files' : ':GFiles --exclude-standard --others --cached')."\<cr>"
 
-" SuperTab
+""" SuperTab
 let g:SuperTabDefaultCompletionType = "<c-n>"
 
-" float-preview and Deoplete
+""" float-preview and Deoplete
 let g:deoplete#enable_at_startup = 1
 call deoplete#custom#option('keyword_patterns', {'clojure': '[\w!$%&*+/:<=>?@\^_~\-\.#]*'})
 set completeopt-=preview
@@ -129,19 +149,20 @@ let g:float_preview#docked = 0
 let g:float_preview#max_width = 80
 let g:float_preview#max_height = 40
 
-" Conjure
-let g:conjure_log_auto_close = v:true
-let g:conjure_quick_doc_normal_mode = v:false
-let g:conjure_log_direction = "horizontal"
-let g:conjure_log_size_small = 25
-let g:conjure_log_blacklist = ["up", "ret", "ret-multiline", "load-file", "eval"]
+""" Conjure
+let g:conjure#mapping#def_word = "d"
+let g:conjure#log#hud#enabled = v:true
+let g:conjure#log#hud#height = 0.95
+nnoremap <Space>cc mwvip:ConjureEval<CR>'wzz
+" Debug this to switch panes
+nmap <Space>cl <Space>lv<C-W><C-H>:exe "vertical resize " . (winwidth(0) * 5/4)<CR>
 
-" Parinfer
+""" Parinfer
 let g:parinfer_mode = 'smart'
 let g:parinfer_enabled = 1
 let g:parinfer_force_balance = 0
 
-" Vim-sexp
+""" Vim-sexp
 let g:sexp_filetypes = ''
 
 function! s:vim_sexp_mappings()
@@ -172,14 +193,53 @@ augroup VIM_SEXP_MAPPING
     autocmd FileType clojure call s:vim_sexp_mappings()
 augroup END
 
-" luochen1990 Rainbow pairs
-" let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
-
-" junegunn Rainbow pairs
+""" junegunn Rainbow pairs
 augroup rainbow_lisp
   autocmd!
   autocmd FileType lisp,clojure,scheme RainbowParentheses
 augroup END
+
+""" ParcelJS
+" Necessary for ParcelJS to work
+set backupcopy=yes
+
+""" Prettier
+" Auto format all this files with Prettier asynchronously
+autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.yaml PrettierAsync
+
+""" vim-closetag
+" filenames like *.xml, *.html, *.xhtml, ...
+" These are the file extensions where this plugin is enabled.
+let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.js'
+
+" filenames like *.xml, *.xhtml, ...
+" This will make the list of non-closing tags self-closing in the specified files.
+let g:closetag_xhtml_filenames = '*.xhtml,*.jsx'
+
+" filetypes like xml, html, xhtml, ...
+" These are the file types where this plugin is enabled.
+let g:closetag_filetypes = 'html,xhtml,phtml'
+
+" filetypes like xml, xhtml, ...
+" This will make the list of non-closing tags self-closing in the specified files.
+let g:closetag_xhtml_filetypes = 'xhtml,jsx'
+
+" integer value [0|1]
+" This will make the list of non-closing tags case-sensitive (e.g. `<Link>` will be closed while `<link>` won't.)
+let g:closetag_emptyTags_caseSensitive = 1
+
+" dict
+" Disables auto-close if not in a "valid" region (based on filetype)
+let g:closetag_regions = {
+    \ 'typescript.tsx': 'jsxRegion,tsxRegion',
+    \ 'javascript.jsx': 'jsxRegion',
+    \ }
+
+" Shortcut for closing tags, default is '>'
+let g:closetag_shortcut = '>'
+
+" Add > at current position without closing the current tag, default is ''
+let g:closetag_close_shortcut = '<leader>>'
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -213,6 +273,9 @@ set expandtab               " converts tabs to white space
 set shiftwidth=4            " width for autoindents
 set autoindent              " indent a new line the same amount as the line just typed
 set wildmode=longest,list   " get bash-like tab completions
+" Changes indentation based on file type
+autocmd BufRead,BufNewFile *.htm,*.html,*.js,*.ts,*.jsx,*.tsx 
+    \ setlocal tabstop=2 shiftwidth=2 softtabstop=2
 
 " 80 column border
 " set cc=80
@@ -290,3 +353,10 @@ nnoremap k gk
 nnoremap gk k
 nnoremap j gj
 nnoremap gj j
+
+" Disable Background Color Erase (BCE) so that color schemes
+" render properly when inside 256-color tmux and GNU screen.
+" see also http://snk.tuxfamily.org/log/vim-256color-bce.html
+if &term =~ '256color'
+    set t_ut=
+endif
