@@ -4,8 +4,6 @@
 
 call plug#begin('~/.local/share/nvim/plugged')
 
-" Plug 'liuchengxu/vim-better-default'
-
 " Editing
 Plug 'ervandew/supertab'
 Plug 'tpope/vim-commentary'
@@ -19,13 +17,23 @@ Plug 'w0rp/ale'
 Plug 'tpope/vim-surround'
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
-  \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'] }
+  \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'] 
+  \}
+Plug 'Yggdroot/indentLine', { 
+  \'for': ['javascript', 'typescript', 'html'] 
+  \}
+Plug 'jiangmiao/auto-pairs', {
+  \'for': ['javascript', 'typescript', 'css', 'scss', 'graphql', 'vue', 'html'] 
+  \}
+Plug 'alvan/vim-closetag', {
+  \'for': ['javascript', 'typescript', 'html'] 
+  \}
 
 " Visualization
 Plug 'airblade/vim-gitgutter'
 Plug 'itchyny/lightline.vim'
-Plug 'junegunn/rainbow_parentheses.vim', { 'for': 'clojure' }
-Plug 'luochen1990/rainbow', { 'for': 'clojure' }
+" Plug 'kyazdani42/nvim-web-devicons'
+" Plug 'romgrk/barbar.nvim'
 
 " Navigation
 Plug 'justinmk/vim-sneak'
@@ -35,8 +43,6 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" Plug 'jiangmiao/auto-pairs'
-
 " Clojure
 Plug 'guns/vim-sexp'
 Plug 'tpope/vim-sexp-mappings-for-regular-people'
@@ -44,9 +50,8 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ncm2/float-preview.nvim'
 Plug 'Olical/conjure', {'tag': 'v4.0.0'}
 Plug 'eraserhd/parinfer-rust'
-
-" X/HTML
-Plug 'alvan/vim-closetag'
+Plug 'junegunn/rainbow_parentheses.vim', { 'for': 'clojure' }
+Plug 'luochen1990/rainbow', { 'for': 'clojure' }
 
 " Javascript
 Plug 'pangloss/vim-javascript'    " JavaScript support
@@ -56,6 +61,12 @@ Plug 'maxmellon/vim-jsx-pretty'   " JS and JSX syntax
 Plug 'leafgarland/typescript-vim' " TypeScript syntax
 Plug 'peitalin/vim-jsx-typescript'
 Plug 'jparise/vim-graphql'        " GraphQL syntax
+
+" Elm
+Plug 'elmcast/elm-vim'
+
+" Colorschemes
+Plug 'morhetz/gruvbox'
 
 call plug#end()
 
@@ -144,6 +155,9 @@ let g:SuperTabDefaultCompletionType = "<c-n>"
 let g:deoplete#enable_at_startup = 1
 call deoplete#custom#option('keyword_patterns', {'clojure': '[\w!$%&*+/:<=>?@\^_~\-\.#]*'})
 set completeopt-=preview
+" Disable for Elm
+autocmd FileType elm
+       \ call deoplete#custom#buffer_option('auto_complete', v:false)
 
 let g:float_preview#docked = 0
 let g:float_preview#max_width = 80
@@ -241,6 +255,42 @@ let g:closetag_shortcut = '>'
 " Add > at current position without closing the current tag, default is ''
 let g:closetag_close_shortcut = '<leader>>'
 
+""" indentLine
+let g:indentLine_char = '¦'
+
+""" Autopairs
+" let g:AutoPairsMultilineClose = 0
+
+""" barbar.nvim
+" " Magic buffer-picking mode
+" nnoremap <silent> <C-s> :BufferPick<CR>
+" " Sort automatically by...
+" nnoremap <silent> <Space>bd :BufferOrderByDirectory<CR>
+" nnoremap <silent> <Space>bl :BufferOrderByLanguage<CR>
+" " Move to previous/next
+" nnoremap <silent>    <A-,> :BufferPrevious<CR>
+" nnoremap <silent>    <A-.> :BufferNext<CR>
+" " Re-order to previous/next
+" nnoremap <silent>    <A-<> :BufferMovePrevious<CR>
+" nnoremap <silent>    <A->> :BufferMoveNext<CR>
+" " Goto buffer in position...
+" nnoremap <silent>    <A-1> :BufferGoto 1<CR>
+" nnoremap <silent>    <A-2> :BufferGoto 2<CR>
+" nnoremap <silent>    <A-3> :BufferGoto 3<CR>
+" nnoremap <silent>    <A-4> :BufferGoto 4<CR>
+" nnoremap <silent>    <A-5> :BufferGoto 5<CR>
+" nnoremap <silent>    <A-6> :BufferGoto 6<CR>
+" nnoremap <silent>    <A-7> :BufferGoto 7<CR>
+" nnoremap <silent>    <A-8> :BufferGoto 8<CR>
+" nnoremap <silent>    <A-9> :BufferLast<CR>
+" " Close buffer
+" nnoremap <silent>    <A-c> :BufferClose<CR>
+" " Wipeout buffer
+" "                          :BufferWipeout<CR>
+" " Other:
+" " :BarbarEnable - enables barbar (enabled by default)
+" " :BarbarDisable - very bad command, should never be used
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                                 General Configs                                       "
@@ -274,7 +324,7 @@ set shiftwidth=4            " width for autoindents
 set autoindent              " indent a new line the same amount as the line just typed
 set wildmode=longest,list   " get bash-like tab completions
 " Changes indentation based on file type
-autocmd BufRead,BufNewFile *.htm,*.html,*.js,*.ts,*.jsx,*.tsx 
+autocmd BufRead,BufNewFile *.htm,*.html,*.js,*.ts,*.jsx,*.tsx,*.css,*.elm
     \ setlocal tabstop=2 shiftwidth=2 softtabstop=2
 
 " 80 column border
@@ -357,6 +407,11 @@ nnoremap gj j
 " Disable Background Color Erase (BCE) so that color schemes
 " render properly when inside 256-color tmux and GNU screen.
 " see also http://snk.tuxfamily.org/log/vim-256color-bce.html
-if &term =~ '256color'
-    set t_ut=
-endif
+" if &term =~ '256color'
+"     set t_ut=
+" endif
+
+" Colorscheme: Gruvbox
+autocmd vimenter * ++nested colorscheme gruvbox
+set background=light
+set termguicolors

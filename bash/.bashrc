@@ -1,5 +1,6 @@
 alias vim=nvim
-alias tmux="TERM=screen-256color-bce tmux"
+# alias tmux="TERM=screen-256color-bce tmux"
+# export TERM="xterm-256color"
 
 # Make FZF search faster
 if [[ "$0" == "bash" ]]; then
