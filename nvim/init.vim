@@ -28,6 +28,8 @@ Plug 'jiangmiao/auto-pairs', {
 Plug 'alvan/vim-closetag', {
   \'for': ['javascript', 'typescript', 'html'] 
   \}
+Plug 'junegunn/vim-easy-align'
+Plug 'preservim/nerdtree'
 
 " Visualization
 Plug 'airblade/vim-gitgutter'
@@ -291,6 +293,8 @@ let g:indentLine_char = '¦'
 " " :BarbarEnable - enables barbar (enabled by default)
 " " :BarbarDisable - very bad command, should never be used
 
+" NERDTree
+map <C-n> :NERDTreeToggle<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                                 General Configs                                       "
