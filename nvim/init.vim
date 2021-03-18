@@ -20,16 +20,17 @@ Plug 'prettier/vim-prettier', {
   \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'] 
   \}
 Plug 'Yggdroot/indentLine', { 
-  \'for': ['javascript', 'typescript', 'html'] 
+  \'for': ['javascript', 'typescript', 'typescript.tsx', 'html'] 
   \}
 Plug 'jiangmiao/auto-pairs', {
-  \'for': ['javascript', 'typescript', 'css', 'scss', 'graphql', 'vue', 'html'] 
+  \'for': ['javascript', 'typescript', 'typescript.tsx', 'css', 'scss', 'graphql', 'vue', 'html'] 
   \}
 Plug 'alvan/vim-closetag', {
-  \'for': ['javascript', 'typescript', 'html'] 
+  \'for': ['javascript', 'typescript', 'typescript.tsx', 'html'] 
   \}
 Plug 'junegunn/vim-easy-align'
 Plug 'preservim/nerdtree'
+Plug 'voldikss/vim-floaterm'
 
 " Visualization
 Plug 'airblade/vim-gitgutter'
@@ -43,12 +44,18 @@ Plug 'justinmk/vim-sneak'
 " Search
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+
+" Autocomplete with LSP
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc-prettier'
+Plug 'neoclide/coc-eslint'
+" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'Shougo/deoplete-lsp'
+" Plug 'neovim/nvim-lspconfig'
 
 " Clojure
 Plug 'guns/vim-sexp'
 Plug 'tpope/vim-sexp-mappings-for-regular-people'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ncm2/float-preview.nvim'
 Plug 'Olical/conjure', {'tag': 'v4.0.0'}
 Plug 'eraserhd/parinfer-rust'
@@ -116,12 +123,12 @@ let g:ale_linters = {
     \ 'python': ['pyflakes', 'mypy'],
     \ 'scala': ['scalastyle'],
     \ 'haskell': ['stack-ghc-mod', 'hlint'],
-    \ 'clojure': ['clj-kondo', 'joker'],
-    \ 'html': ['htmlhint'],
-    \ 'css': ['stylelint'],
-    \ 'javascript': ['eslint'],
-    \ 'typescript': ['eslint']
+    \ 'clojure': ['clj-kondo', 'joker']
     \}
+    " \ 'html': ['htmlhint'],
+    " \ 'css': ['stylelint'],
+    " \ 'javascript': ['eslint'],
+    " \ 'typescript': ['eslint']
 let g:ale_python_mypy_options = "Ðignore-missing-imports"
 let g:ale_linters_explicit = 1
 let g:ale_completion_enabled = 1
@@ -153,14 +160,50 @@ nnoremap <Space>bh :FZF ~<CR>
 """ SuperTab
 let g:SuperTabDefaultCompletionType = "<c-n>"
 
-""" float-preview and Deoplete
-let g:deoplete#enable_at_startup = 1
-call deoplete#custom#option('keyword_patterns', {'clojure': '[\w!$%&*+/:<=>?@\^_~\-\.#]*'})
-set completeopt-=preview
-" Disable for Elm
-autocmd FileType elm
-       \ call deoplete#custom#buffer_option('auto_complete', v:false)
+""" Deoplete
+" let g:deoplete#enable_at_startup = 1
+" call deoplete#custom#option('keyword_patterns', {'clojure': '[\w!$%&*+/:<=>?@\^_~\-\.#]*'})
+" set completeopt-=preview
+" " Disable for Elm
+" autocmd FileType elm
+"        \ call deoplete#custom#buffer_option('auto_complete', v:false)
 
+""" COC settings
+let g:coc_global_extensions = [
+      \ 'coc-tsserver',
+      \ 'coc-css',
+      \ 'coc-html',
+      \ 'coc-sql',
+      \ 'coc-yaml',
+      \ 'coc-go',
+      \ 'coc-pyright',
+      \ ]
+" coc-prettier and coc-eslint
+if isdirectory('./node_modules') && isdirectory('./node_modules/prettier')
+  let g:coc_global_extensions += ['coc-prettier']
+endif
+if isdirectory('./node_modules') && isdirectory('./node_modules/eslint')
+  let g:coc_global_extensions += ['coc-eslint']
+endif
+" Show diagnostics if exists, otherwise show documentation
+" nnoremap <silent> K :call CocAction('doHover')<CR>
+function! ShowDocIfNoDiagnostic(timer_id)
+  if (coc#util#has_float() == 0)
+    silent call CocActionAsync('doHover')
+  endif
+endfunction
+
+function! s:show_hover_doc()
+  call timer_start(500, 'ShowDocIfNoDiagnostic')
+endfunction
+" Get definition, type, or references
+nmap <silent> cd <Plug>(coc-definition)
+nmap <silent> cy <Plug>(coc-type-definition)
+nmap <silent> cr <Plug>(coc-references)
+" " Code action, i.e. auto imports
+nmap <leader>do <Plug>(coc-codeaction)
+
+""" Float-preview
 let g:float_preview#docked = 0
 let g:float_preview#max_width = 80
 let g:float_preview#max_height = 40
@@ -227,35 +270,29 @@ autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.gra
 " filenames like *.xml, *.html, *.xhtml, ...
 " These are the file extensions where this plugin is enabled.
 let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.js'
-
 " filenames like *.xml, *.xhtml, ...
 " This will make the list of non-closing tags self-closing in the specified files.
 let g:closetag_xhtml_filenames = '*.xhtml,*.jsx'
-
 " filetypes like xml, html, xhtml, ...
 " These are the file types where this plugin is enabled.
 let g:closetag_filetypes = 'html,xhtml,phtml'
-
 " filetypes like xml, xhtml, ...
 " This will make the list of non-closing tags self-closing in the specified files.
 let g:closetag_xhtml_filetypes = 'xhtml,jsx'
-
 " integer value [0|1]
 " This will make the list of non-closing tags case-sensitive (e.g. `<Link>` will be closed while `<link>` won't.)
 let g:closetag_emptyTags_caseSensitive = 1
-
-" dict
-" Disables auto-close if not in a "valid" region (based on filetype)
+" Disables auto-close if not in a valid region (based on filetype)
 let g:closetag_regions = {
     \ 'typescript.tsx': 'jsxRegion,tsxRegion',
     \ 'javascript.jsx': 'jsxRegion',
     \ }
-
 " Shortcut for closing tags, default is '>'
 let g:closetag_shortcut = '>'
-
 " Add > at current position without closing the current tag, default is ''
 let g:closetag_close_shortcut = '<leader>>'
+" Testing
+autocmd BufNewFile,BufRead *.tsx set filetype=typescript.tsx
 
 """ indentLine
 let g:indentLine_char = '¦'
@@ -295,6 +332,11 @@ let g:indentLine_char = '¦'
 
 " NERDTree
 map <C-n> :NERDTreeToggle<CR>
+
+" Neovim LSP
+" :lua <<EOF
+"     require'lspconfig'.flow.setup{}
+" EOF
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                                 General Configs                                       "
@@ -415,7 +457,10 @@ nnoremap gj j
 "     set t_ut=
 " endif
 
+" Word wrapping
+set wrap
+
 " Colorscheme: Gruvbox
 autocmd vimenter * ++nested colorscheme gruvbox
-set background=light
 set termguicolors
+set background=light
