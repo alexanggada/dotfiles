@@ -4,6 +4,9 @@
 
 call plug#begin('~/.local/share/nvim/plugged')
 
+" Latex
+Plug 'lervag/vimtex'
+
 " Editing
 Plug 'ervandew/supertab'
 Plug 'tpope/vim-commentary'
@@ -264,12 +267,12 @@ set backupcopy=yes
 
 """ Prettier
 " Auto format all this files with Prettier asynchronously
-autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.yaml PrettierAsync
+" autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.yaml PrettierAsync
 
 """ vim-closetag
 " filenames like *.xml, *.html, *.xhtml, ...
 " These are the file extensions where this plugin is enabled.
-let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.js'
+let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.js,*.ts'
 " filenames like *.xml, *.xhtml, ...
 " This will make the list of non-closing tags self-closing in the specified files.
 let g:closetag_xhtml_filenames = '*.xhtml,*.jsx'
@@ -278,7 +281,7 @@ let g:closetag_xhtml_filenames = '*.xhtml,*.jsx'
 let g:closetag_filetypes = 'html,xhtml,phtml'
 " filetypes like xml, xhtml, ...
 " This will make the list of non-closing tags self-closing in the specified files.
-let g:closetag_xhtml_filetypes = 'xhtml,jsx'
+let g:closetag_xhtml_filetypes = 'xhtml,jsx,tsx'
 " integer value [0|1]
 " This will make the list of non-closing tags case-sensitive (e.g. `<Link>` will be closed while `<link>` won't.)
 let g:closetag_emptyTags_caseSensitive = 1
@@ -337,6 +340,94 @@ map <C-n> :NERDTreeToggle<CR>
 " :lua <<EOF
 "     require'lspconfig'.flow.setup{}
 " EOF
+
+" Easy Align
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+
+" -----------------------------------------------------------------------------
+"  VIMTEX OPTIONS
+"  ----------------------------------------------------------------------------
+if has('unix')
+    if has('mac')
+        let g:vimtex_view_method = "skim"
+        let g:vimtex_view_general_viewer
+                \ = '/Applications/Skim.app/Contents/SharedSupport/displayline'
+        let g:vimtex_view_general_options = '-r @line @pdf @tex'
+
+        " This adds a callback hook that updates Skim after compilation
+        function! UpdateSkim(status)
+            if !a:status | return | endif
+
+            let l:out = b:vimtex.out()
+            let l:tex = expand('%:p')
+            let l:cmd = [g:vimtex_view_general_viewer, '-r']
+            if !empty(system('pgrep Skim'))
+            call extend(l:cmd, ['-g'])
+            endif
+            if has('nvim')
+            call jobstart(l:cmd + [line('.'), l:out, l:tex])
+            elseif has('job')
+            call job_start(l:cmd + [line('.'), l:out, l:tex])
+            else
+            call system(join(l:cmd + [line('.'), shellescape(l:out), shellescape(l:tex)], ' '))
+            endif
+        endfunction
+        let g:vimtex_compiler_latexmk = {
+          \ 'build_dir' : '',
+          \ 'callback' : 1,
+          \ 'continuous' : 1,
+          \ 'executable' : 'latexmk',
+          \ 'hooks' : [function('UpdateSkim')],
+          \   'options' : [
+          \       '-file-line-error',
+          \       '-synctex=1',
+          \       '-interaction=nonstopmode',
+          \     ],
+          \}
+    else
+        let g:latex_view_general_viewer = "zathura"
+        let g:vimtex_view_method = "zathura"
+    endif
+elseif has('win32')
+
+endif
+
+let g:tex_flavor = "latex"
+let g:vimtex_quickfix_open_on_warning = 0
+let g:vimtex_quickfix_mode = 2
+if has('nvim')
+    let g:vimtex_compiler_progname = 'nvr'
+endif
+
+" One of the neosnippet plugins will conceal symbols in LaTeX which is
+" confusing
+let g:tex_conceal = ""
+
+" " Can hide specifc warning messages from the quickfix window
+" " Quickfix with Neovim is broken or something
+" " https://github.com/lervag/vimtex/issues/773
+" let g:vimtex_quickfix_latexlog = {
+"             \ 'default' : 1,
+"             \ 'fix_paths' : 0,
+"             \ 'general' : 1,
+"             \ 'references' : 1,
+"             \ 'overfull' : 1,
+"             \ 'underfull' : 1,
+"             \ 'font' : 1,
+"             \ 'packages' : {
+"             \   'default' : 1,
+"             \   'natbib' : 1,
+"             \   'biblatex' : 1,
+"             \   'babel' : 1,
+"             \   'hyperref' : 1,
+"             \   'scrreprt' : 1,
+"             \   'fixltx2e' : 1,
+"             \   'titlesec' : 1,
+"             \ },
+"             \}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                                 General Configs                                       "
