@@ -436,7 +436,7 @@ let g:tex_conceal = ""
 " Load vim configuration to nvim
 set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath = &runtimepath
-source ~/.vimrc
+" source ~/.vimrc
 
 " Disable compatibility to old-time vi
 set nocompatible
@@ -554,4 +554,9 @@ set wrap
 " Colorscheme: Gruvbox
 autocmd vimenter * ++nested colorscheme gruvbox
 set termguicolors
+" set background=dark
 set background=light
+
+" Pane splitting
+nnoremap <Space>sh :split<CR>
+nnoremap <Space>sv :vsplit<CR>

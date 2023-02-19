@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/alexanderanggada/.oh-my-zsh"
+export ZSH="/Users/alexanggada/.oh-my-zsh"
 
 # True color
 export TERM="screen-256color"
@@ -104,26 +104,6 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# added by Anaconda3 2019.07 installer
-# >>> conda init >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$(CONDA_REPORT_ERRORS=false '/Users/alexanderanggada/anaconda3/bin/conda' shell.bash hook 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    \eval "$__conda_setup"
-else
-    if [ -f "/Users/alexanderanggada/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/alexanderanggada/anaconda3/etc/profile.d/conda.sh"
-        CONDA_CHANGEPS1=false conda activate base
-    else
-        \export PATH="/Users/alexanderanggada/anaconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda init <<<
-
-# Added by GHCUP
-source /Users/alexanderanggada/.ghcup/env
-
 # Disable error messages when opening vim
 export LC_ALL=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
@@ -131,3 +111,26 @@ export LC_CTYPE=en_US.UTF-8
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 source ~/.bash_profile  
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/Users/alexanggada/opt/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/Users/alexanggada/opt/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/Users/alexanggada/opt/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/Users/alexanggada/opt/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+# source /Users/alexanggada/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/alexanggada/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/alexanggada/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/alexanggada/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/alexanggada/google-cloud-sdk/completion.zsh.inc'; fi
